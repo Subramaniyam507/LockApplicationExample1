@@ -58,14 +58,49 @@ modules:
           Name: LOCKBI
           TokenServiceInstanceName: LockApplicationExample1-auth
           TokenServiceKeyName: uaa_LockApplicationExample1-key
-          URL: ~{srv-api/srv-url}           
+          URL: ~{srv-api/srv-url}
         existing_destinations_policy: ignore
   build-parameters:
     no-source: true
+- name: LockApplicationExample1-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: LockApplicationExample1_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - nameorder.zip
+      name: nameorder
+      target-path: resources/
+- name: nameorder
+  type: html5
+  path: app/order
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
 resources:
 - name: LockApplicationExample1-destination
   type: org.cloudfoundry.managed-service
   parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
     service: destination
     service-plan: lite
 - name: LockApplicationExample1-db
@@ -94,6 +129,7 @@ resources:
     service: xsuaa
     service-plan: application
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
