@@ -1,0 +1,102 @@
+_schema-version: "3.1"
+ID: LockApplicationExample1
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: LockApplicationExample1-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: LockApplicationExample1-destination
+  - name: LockApplicationExample1-db
+  - name: LockApplicationExample1-connectivity
+  - name: LockApplicationExample1-auth
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: LockApplicationExample1-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: LockApplicationExample1-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: LockApplicationExample1-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: LockApplicationExample1-destination
+    parameters:
+      content-target: true
+  - name: LockApplicationExample1_html_repo_host
+    parameters:
+      service-key:
+        name: LockApplicationExample1_html_repo_host-key
+  - name: LockApplicationExample1-auth
+    parameters:
+      service-key:
+        name: uaa_LockApplicationExample1-key
+  - name: srv-api
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: L1BS_LockApplicationExample1_html_repo_host
+          ServiceInstanceName: LockApplicationExample1-html5-app-host-service
+          ServiceKeyName: LockApplicationExample1_html_repo_host-key
+          sap.cloud.service: L1BS
+        - Authentication: OAuth2UserTokenExchange
+          Name: L1BS_uaa_LockApplicationExample1
+          ServiceInstanceName: LockApplicationExample1-auth
+          ServiceKeyName: uaa_LockApplicationExample1-key
+          sap.cloud.service: L1BS
+        - Authentication: OAuth2UserTokenExchange
+          Name: LOCKBI
+          TokenServiceInstanceName: LockApplicationExample1-auth
+          TokenServiceKeyName: uaa_LockApplicationExample1-key
+          URL: ~{srv-api/srv-url}           
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+resources:
+- name: LockApplicationExample1-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: destination
+    service-plan: lite
+- name: LockApplicationExample1-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: LockApplicationExample1-connectivity
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: connectivity
+    service-plan: lite
+- name: LockApplicationExample1_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: LockApplicationExample1-html5-app-host-service
+    service-plan: app-host
+- name: LockApplicationExample1-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      tenant-mode: dedicated
+      xsappname: L1LOCKAPP
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npx cds build --production

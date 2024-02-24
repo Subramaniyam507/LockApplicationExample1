@@ -1,0 +1,33 @@
+{
+  "xsappname": "L1LOCKAPP",
+  "tenant-mode": "dedicated",
+  "description": "Security profile of called application",
+  "scopes": [
+    {
+      "name": "uaa.user",
+      "description": "UAA"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "Token_Exchange",
+      "description": "UAA",
+      "scope-references": [
+        "uaa.user"
+      ]
+    }
+  ],
+  "oauth2-configuration":{
+    "credential-types":[
+      "binding-secret",
+      "x509"
+    ],
+    "redirect-uris":[
+      "https://*.hana.ondemand.com/**",
+      "https://*cfapps.us10-001.hana.ondemand.com/login/callback*",
+      "https://port5000*/login/callback*",
+      "https://**.applicationstudio.cloud.sap/**"
+
+    ]
+  }
+}
