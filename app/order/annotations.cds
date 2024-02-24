@@ -1,6 +1,23 @@
 using Service1 as service from '../../srv/Serivice';
 
 annotate service.OrderSet with @(
+    UI.SelectionFields:[
+        {  
+            
+            $value: ID,
+        },
+        {
+            $value:customer_ID,
+        },
+        {
+            $value: product,
+        },
+        {
+            $value: totalamount
+        }
+
+    ],
+
     UI.LineItem : [
         {
             $Type : 'UI.DataField',

@@ -1,0 +1,7 @@
+OrderID,Product,TotalAmount, Customer_CustomerID
+1,SamsungTV,1000,2
+2,Iphone,34545,3
+3,SmartWatch,333,2
+4,TreadMill,3345,1
+5,Item100,33445,4
+6,Something,3322,3

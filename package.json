@@ -30,16 +30,24 @@
     },
     "cds": {
         "requires": {
+       
             "db": {
                 "kind": "hana",
                 "credentials": {
                     "database": "LockApplicationExample1-db"
                 }
             },
-            "destinations": true
+            "destinations": true,
+            "table_lock":{
+              "kind": "rest",
+               "credentials":{
+                "destination":"table_lock"
+               }
+            }
         }
     },
     "sapux": [
         "app/order"
     ]
+    
 }
