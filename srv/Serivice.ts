@@ -1,5 +1,5 @@
 import { ApplicationService } from "@sap/cds";
-import cds = require("@sap/cds");
+
 import { RequestLockAndUnLock, TableData } from "./src/Commontypes/Common";
 import { TableLockService } from "./src/Service/TableLockService";
 import { Utiltiy } from "./src/Utility/Utility";
