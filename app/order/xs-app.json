@@ -3,8 +3,8 @@
   "authenticationMethod": "route",
   "routes": [
     {
-      "source": "^/v2/odata/(.*)$",
-      "target": "/v2/odata/$1",
+      "source": "^/odata/(.*)$",
+      "target": "/odata/$1",
       "destination": "LOCKBI",
       "authenticationType": "xsuaa",
       "csrfProtection": false

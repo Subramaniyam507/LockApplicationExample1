@@ -17,10 +17,11 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "v2/odata/v4/service1/",
+        "uri": "odata/v4/service1/",
         "type": "OData",
         "settings": {
           "annotations": [],
+           "localUri": "localService/metadata.xml",
           "odataVersion": "4.0"
         }
       }
