@@ -29,5 +29,38 @@ export = (srv: ApplicationService) => {
        
     });
 
-   
+    srv.on('hello', async function (req) {
+       
+      const lockSrv:TableLockService = new TableLockService();
+    
+       
+            const data :RequestLockAndUnLock= 
+            {
+               request:{
+                   fields:[
+                       "Primary Key data 1 ",
+                       "Primary Key data 2 ",
+                       "Primary Key data 3"
+                   ],
+                   tables:[
+                       "Table1","Table2"
+                   ],
+                   user:"subramaniyam.n@gmail.com",
+                   ricef:"ricef1"
+               }
+           }
+            
+            
+             const lockResponse = await lockSrv.acquireLock(data) ;
+             console.log(lockResponse);
+             return JSON.stringify(lockResponse)
+
+
+      
+    
+      
+  
+     
+     
+  });
 };

@@ -25,4 +25,26 @@ module.exports = (srv) => {
             yield Promise.all(lockPromises);
         });
     });
+    srv.on('hello', function (req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const lockSrv = new TableLockService_1.TableLockService();
+            const data = {
+                request: {
+                    fields: [
+                        "Primary Key data 1 ",
+                        "Primary Key data 2 ",
+                        "Primary Key data 3"
+                    ],
+                    tables: [
+                        "Table1", "Table2"
+                    ],
+                    user: "subramaniyam.n@gmail.com",
+                    ricef: "ricef1"
+                }
+            };
+            const lockResponse = yield lockSrv.acquireLock(data);
+            console.log(lockResponse);
+            return JSON.stringify(lockResponse);
+        });
+    });
 };
