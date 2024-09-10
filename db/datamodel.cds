@@ -1,17 +1,8 @@
 namespace db;
 
 
-entity Customers{
+entity Books{
     key ID:Integer;
-    firstName:String;
-    lastName:String;
-    age:Integer;
-    country:String;
-}
-
-entity Order{
-    key ID:Integer;
-    product:String;
-    totalamount:String;
-    customer:Association to Customers;
+    key Name:String;
+        Price:Decimal;
 }
