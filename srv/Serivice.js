@@ -11,40 +11,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const TableLockService_1 = require("./src/Service/TableLockService");
 const Utility_1 = require("./src/Utility/Utility");
 module.exports = (srv) => {
-    srv.after('READ', 'OrderSet', function (req, res) {
+    srv.before('READ', 'Books', function (req) {
         return __awaiter(this, void 0, void 0, function* () {
             const lockSrv = new TableLockService_1.TableLockService();
-            let data = req;
-            const lockPromises = data.map((data) => __awaiter(this, void 0, void 0, function* () {
-                const payload = Utility_1.Utiltiy.preparePayload(data);
+            let data = req.data;
+            // looping through entries to be read from data base 
+            // creating local asynchronous context for loop to enhance performance
+            const lockPromises = data.map((dataEntry) => __awaiter(this, void 0, void 0, function* () {
+                const payload = Utility_1.Utiltiy.preparePayload(dataEntry);
+                // calling acquire lock endpoint of the table lock serrvice 
                 const lockResponse = yield lockSrv.acquireLock(payload);
+                //checking if the isLocked flag is true or false
+                // if the lock acquisiton has failed then 
+                // throw the error message 
+                //message attribute returned by the lock service 
+                // would have details of the current holder of lock acessing from which application
                 if (lockResponse.isLocked === false) {
-                    res.reject('403', lockResponse.message);
+                    req.reject('403', lockResponse.message);
                 }
             }));
             yield Promise.all(lockPromises);
         });
     });
-    srv.on('hello', function (req) {
+    srv.after('UPDATE', function (req) {
         return __awaiter(this, void 0, void 0, function* () {
             const lockSrv = new TableLockService_1.TableLockService();
-            const data = {
-                request: {
-                    fields: [
-                        "Primary Key data 1 ",
-                        "Primary Key data 2 ",
-                        "Primary Key data 3"
-                    ],
-                    tables: [
-                        "Table1", "Table2"
-                    ],
-                    user: "subramaniyam.n@gmail.com",
-                    ricef: "ricef1"
+            let data = req.data;
+            const lockPromises = data.map((dataEntry) => __awaiter(this, void 0, void 0, function* () {
+                const payload = Utility_1.Utiltiy.preparePayload(dataEntry);
+                const lockResponse = yield lockSrv.acquireLock(payload);
+                if (lockResponse.isLockReleased === false) {
+                    req.reject('403', lockResponse.message);
                 }
-            };
-            const lockResponse = yield lockSrv.acquireLock(data);
-            console.log(lockResponse);
-            return JSON.stringify(lockResponse);
+            }));
+            yield Promise.all(lockPromises);
         });
     });
 };

@@ -1,4 +1,4 @@
-import { ApplicationService } from "@sap/cds";
+import {ApplicationService} from '@sap/cds'
 
 import { RequestLockAndUnLock, TableData } from "./src/Commontypes/Common";
 import { TableLockService } from "./src/Service/TableLockService";
@@ -6,17 +6,25 @@ import { Utiltiy } from "./src/Utility/Utility";
 
 export = (srv: ApplicationService) => {
 
-    srv.after('READ','OrderSet', async function (req,res) {
+    srv.before('READ','Books', async function (req:any) {
        
         const lockSrv:TableLockService = new TableLockService();
       
-         let data:TableData[] = req;
+         let data:TableData[] = req.data;
+         // looping through entries to be read from data base 
+         // creating local asynchronous context for loop to enhance performance
          const lockPromises:Promise<void>[] = data.map(
-            async(data)=>{
-               const payload:RequestLockAndUnLock = Utiltiy.preparePayload(data);
+            async(dataEntry)=>{
+               const payload:RequestLockAndUnLock = Utiltiy.preparePayload(dataEntry);
+               // calling acquire lock endpoint of the table lock serrvice 
                const lockResponse = await lockSrv.acquireLock(payload) ;
+       //checking if the isLocked flag is true or false
+       // if the lock acquisiton has failed then 
+      // throw the error message 
+      //message attribute returned by the lock service 
+      // would have details of the current holder of lock acessing from which application
                if(lockResponse.isLocked === false){
-                 res.reject('403',lockResponse.message);
+                 req.reject('403',lockResponse.message);
                }
             }
          );
@@ -29,38 +37,22 @@ export = (srv: ApplicationService) => {
        
     });
 
-    srv.on('hello', async function (req) {
+    srv.after('UPDATE', async function (req:any) {
        
       const lockSrv:TableLockService = new TableLockService();
-    
-       
-            const data :RequestLockAndUnLock= 
-            {
-               request:{
-                   fields:[
-                       "Primary Key data 1 ",
-                       "Primary Key data 2 ",
-                       "Primary Key data 3"
-                   ],
-                   tables:[
-                       "Table1","Table2"
-                   ],
-                   user:"subramaniyam.n@gmail.com",
-                   ricef:"ricef1"
-               }
+      let data:TableData[] = req.data;
+      const lockPromises:Promise<void>[] = data.map(
+        async(dataEntry)=>{
+           const payload:RequestLockAndUnLock = Utiltiy.preparePayload(dataEntry);
+           const lockResponse = await lockSrv.acquireLock(payload) ;
+           if(lockResponse.isLockReleased === false){
+             req.reject('403',lockResponse.message);
            }
-            
-            
-             const lockResponse = await lockSrv.acquireLock(data) ;
-             console.log(lockResponse);
-             return JSON.stringify(lockResponse)
+        }
+     );
 
-
-      
-    
-      
-  
-     
+     await Promise.all(lockPromises);
+       
      
   });
 };
