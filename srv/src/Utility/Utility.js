@@ -13,7 +13,7 @@ class Utiltiy {
                 fields: fields,
                 tables: tables,
                 user: user,
-                ricef: "APP1"
+                ricef: "ricef1"
             }
         };
         return payload;
