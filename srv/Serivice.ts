@@ -6,6 +6,7 @@ import { Utiltiy } from "./src/Utility/Utility";
 
 export = (srv: ApplicationService) => {
 
+// acquiring lock before the READ generic Event
     srv.before('READ','Books', async function (req:any) {
        
         const lockSrv:TableLockService = new TableLockService();
@@ -36,7 +37,7 @@ export = (srv: ApplicationService) => {
        
        
     });
-
+// Releasing the lock post execution of UPDATE  generic handler
     srv.after('UPDATE', async function (req:any) {
        
       const lockSrv:TableLockService = new TableLockService();

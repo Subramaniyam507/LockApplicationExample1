@@ -5,8 +5,8 @@ const cds = require("@sap/cds");
 class Utiltiy {
     static preparePayload(data) {
         var _a;
-        let fields = [data.ID.toString(), data.customer_ID.toString()];
-        let tables = ["Orders", "Customers"];
+        let fields = [data.ID.toString(), data.Name];
+        let tables = ["Books"];
         const user = (_a = cds.context) === null || _a === void 0 ? void 0 : _a.user.id;
         const payload = {
             request: {

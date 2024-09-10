@@ -11,7 +11,6 @@ export interface RequestLockAndUnLock{
 
 export interface TableData{
     ID:number;
-    product:string;
-    totalamount:string;
-    customer_ID:number;
+    Name:string;
+
 }

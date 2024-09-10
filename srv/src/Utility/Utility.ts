@@ -15,8 +15,8 @@ export class Utiltiy{
 
 
      public static preparePayload(data:TableData){
-        let fields:string[] = [data.ID.toString(),data.customer_ID.toString()]
-        let tables:string[] = ["Orders","Customers"]
+        let fields:string[] = [data.ID.toString(),data.Name]
+        let tables:string[] = ["Books"]
         const user = cds.context?.user.id as string;
         const payload:RequestLockAndUnLock={
             request:{

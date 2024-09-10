@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const TableLockService_1 = require("./src/Service/TableLockService");
 const Utility_1 = require("./src/Utility/Utility");
 module.exports = (srv) => {
+    // acquiring lock before the READ generic Event
     srv.before('READ', 'Books', function (req) {
         return __awaiter(this, void 0, void 0, function* () {
             const lockSrv = new TableLockService_1.TableLockService();
@@ -33,6 +34,7 @@ module.exports = (srv) => {
             yield Promise.all(lockPromises);
         });
     });
+    // Releasing the lock post execution of UPDATE  generic handler
     srv.after('UPDATE', function (req) {
         return __awaiter(this, void 0, void 0, function* () {
             const lockSrv = new TableLockService_1.TableLockService();
